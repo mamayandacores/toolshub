@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ToolsHub - Free Online Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --card: #1a1a24;
+    --accent: #f0c040;
+    --accent2: #40c0f0;
+    --text: #e8e8f0;
+    --muted: #7070a0;
+    --border: #2a2a3a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--accent); letter-spacing: -1px; }
+  .logo span { color: var(--accent2); }
+  nav a { color: var(--muted); text-decoration: none; font-size: 0.9rem; margin-left: 1.5rem; transition: color 0.2s; }
+  nav a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    text-align: center; padding: 5rem 2rem 3rem;
+    background: radial-gradient(ellipse at 50% 0%, #1a1a30 0%, transparent 70%);
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif; font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800; line-height: 1.1;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+  .hero p { color: var(--muted); font-size: 1.1rem; max-width: 500px; margin: 0 auto 2rem; }
+  .badge { display: inline-block; background: rgba(240,192,64,0.1); border: 1px solid rgba(240,192,64,0.3); color: var(--accent); padding: 0.3rem 1rem; border-radius: 999px; font-size: 0.8rem; margin-bottom: 1.5rem; }
+
+  /* TOOLS GRID */
+  .tools-section { padding: 2rem; max-width: 1100px; margin: 0 auto; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text); }
+  .section-title span { color: var(--accent); }
+  .tools-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem; margin-bottom: 3rem;
+  }
+  .tool-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .tool-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 30px rgba(240,192,64,0.1);
+  }
+  .tool-icon { font-size: 2rem; margin-bottom: 0.8rem; }
+  .tool-card h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .tool-card p { color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem; }
+  .use-btn {
+    display: inline-block; background: var(--accent); color: #000;
+    border: none; padding: 0.5rem 1.2rem; border-radius: 8px;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .use-btn:hover { opacity: 0.85; }
+
+  /* MODAL / TOOL PANEL */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8); z-index: 200;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .overlay.active { display: flex; }
+  .modal {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2rem; width: 100%; max-width: 600px;
+    max-height: 90vh; overflow-y: auto; position: relative;
+  }
+  .modal h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--accent); }
+  .close-btn {
+    position: absolute; top: 1rem; right: 1rem;
+    background: var(--border); border: none; color: var(--text);
+    width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+    font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+  }
+  .close-btn:hover { background: #f04040; }
+
+  /* TOOL UI */
+  textarea, input[type=text], input[type=number], select {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); border-radius: 10px; padding: 0.8rem; font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; resize: vertical; margin-bottom: 0.8rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  textarea:focus, input:focus, select:focus { border-color: var(--accent); }
+  .tool-btn {
+    background: var(--accent); color: #000; border: none; padding: 0.6rem 1.4rem;
+    border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700;
+    cursor: pointer; margin-right: 0.5rem; margin-bottom: 0.5rem; transition: opacity 0.2s;
+  }
+  .tool-btn:hover { opacity: 0.85; }
+  .tool-btn.secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .result-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1rem; margin-top: 1rem;
+    font-size: 0.9rem; color: var(--accent2); word-break: break-all;
+    min-height: 60px;
+  }
+  .stat { display: inline-block; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem 0.8rem; margin: 0.3rem 0.3rem 0.3rem 0; font-size: 0.85rem; }
+  .stat span { color: var(--accent); font-weight: 700; }
+  label { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 0.3rem; }
+  .flex-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+
+  /* FOOTER */
+  footer {
+    text-align: center; padding: 2rem;
+    color: var(--muted); font-size: 0.85rem;
+    border-top: 1px solid var(--border); margin-top: 3rem;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* AD PLACEHOLDER */
+  .ad-placeholder {
+    background: var(--surface); border: 1px dashed var(--border);
+    border-radius: 12px; padding: 1.5rem; text-align: center;
+    color: var(--muted); font-size: 0.8rem; margin: 2rem 0;
+  }
+  .ad-placeholder strong { display: block; font-size: 0.7rem; margin-bottom: 0.3rem; color: #555; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Tools<span>Hub</span></div>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="admin.html">Admin Panel</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="badge">⚡ 100% Free — No Sign Up Needed</div>
+  <h1>Free Online Tools<br>For Everyone</h1>
+  <p>Fast, simple, and free tools that work right in your browser. No downloads. No registration.</p>
+</div>
+
+<div class="tools-section">
+
+  <!-- AD TOP -->
+  <div class="ad-placeholder">
+    <strong>ADVERTISEMENT</strong>
+    <!-- Paste your Google AdSense code here -->
+    Your Ad Here (728×90) — Add Google AdSense script here
+  </div>
+
+  <div class="section-title"><span>5</span> Popular Tools</div>
+
+  <div class="tools-grid">
+
+    <div class="tool-card" onclick="openTool('wordcount')">
+      <div class="tool-icon">📝</div>
+      <h3>Word & Character Counter</h3>
+      <p>Count words, characters, sentences and paragraphs instantly.</p>
+      <button class="use-btn">Use Tool →</button>
+    </div>
+
+    <div class="tool-card" onclick="openTool('password')">
+      <div class="tool-icon">🔐</div>
+      <h3>Password Generator</h3>
+      <p>Generate strong, secure passwords with custom options.</p>
+      <button class="use-btn">Use Tool →</button>
+    </div>
+
+    <div class="tool-card" onclick="openTool('caseconvert')">
+      <div class="tool-icon">🔡</div>
+      <h3>Text Case Converter</h3>
+      <p>Convert text to UPPERCASE, lowercase, Title Case and more.</p>
+      <button class="use-btn">Use Tool →</button>
+    </div>
+
+    <div class="tool-card" onclick="openTool('age')">
+      <div class="tool-icon">🎂</div>
+      <h3>Age Calculator</h3>
+      <p>Calculate your exact age in years, months, and days.</p>
+      <button class="use-btn">Use Tool →</button>
+    </div>
+
+    <div class="tool-card" onclick="openTool('base64')">
+      <div class="tool-icon">🔄</div>
+      <h3>Base64 Encoder/Decoder</h3>
+      <p>Encode or decode any text to and from Base64 format.</p>
+      <button class="use-btn">Use Tool →</button>
+    </div>
+
+  </div>
+
+  <!-- AD BOTTOM -->
+  <div class="ad-placeholder">
+    <strong>ADVERTISEMENT</strong>
+    Your Ad Here (336×280) — Add Google AdSense script here
+  </div>
+
+</div>
+
+<footer>
+  &copy; 2026 ToolsHub — Built & hosted on <a href="#">GitHub Pages</a> · All tools are free to use
+</footer>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Word Counter -->
+<div class="overlay" id="modal-wordcount">
+  <div class="modal">
+    <button class="close-btn" onclick="closeTool('wordcount')">✕</button>
+    <h2>📝 Word & Character Counter</h2>
+    <label>Paste or type your text below:</label>
+    <textarea id="wc-input" rows="8" placeholder="Type something here..." oninput="countWords()"></textarea>
+    <div>
+      <div class="stat">Words: <span id="wc-words">0</span></div>
+      <div class="stat">Characters: <span id="wc-chars">0</span></div>
+      <div class="stat">No Spaces: <span id="wc-nospace">0</span></div>
+      <div class="stat">Sentences: <span id="wc-sent">0</span></div>
+      <div class="stat">Paragraphs: <span id="wc-para">0</span></div>
+      <div class="stat">Lines: <span id="wc-lines">0</span></div>
+    </div>
+    <button class="tool-btn secondary" onclick="document.getElementById('wc-input').value='';countWords()">Clear</button>
+  </div>
+</div>
+
+<!-- Password Generator -->
+<div class="overlay" id="modal-password">
+  <div class="modal">
+    <button class="close-btn" onclick="closeTool('password')">✕</button>
+    <h2>🔐 Password Generator</h2>
+    <label>Password Length: <span id="pw-len-label">16</span></label>
+    <input type="range" min="6" max="64" value="16" id="pw-length" oninput="document.getElementById('pw-len-label').textContent=this.value" style="width:100%;margin-bottom:1rem;accent-color:var(--accent)">
+    <div class="flex-row">
+      <label><input type="checkbox" id="pw-upper" checked> Uppercase (A-Z)</label>
+      <label><input type="checkbox" id="pw-lower" checked> Lowercase (a-z)</label>
+      <label><input type="checkbox" id="pw-num" checked> Numbers (0-9)</label>
+      <label><input type="checkbox" id="pw-sym" checked> Symbols (!@#$)</label>
+    </div>
+    <button class="tool-btn" onclick="generatePassword()">Generate Password</button>
+    <div class="result-box" id="pw-result">Your password will appear here...</div>
+    <button class="tool-btn secondary" onclick="copyResult('pw-result')" style="margin-top:0.5rem">📋 Copy</button>
+  </div>
+</div>
+
+<!-- Text Case Converter -->
+<div class="overlay" id="modal-caseconvert">
+  <div class="modal">
+    <button class="close-btn" onclick="closeTool('caseconvert')">✕</button>
+    <h2>🔡 Text Case Converter</h2>
+    <label>Enter your text:</label>
+    <textarea id="cc-input" rows="5" placeholder="Type your text here..."></textarea>
+    <div class="flex-row">
+      <button class="tool-btn" onclick="convertCase('upper')">UPPERCASE</button>
+      <button class="tool-btn" onclick="convertCase('lower')">lowercase</button>
+      <button class="tool-btn" onclick="convertCase('title')">Title Case</button>
+      <button class="tool-btn" onclick="convertCase('sentence')">Sentence case</button>
+      <button class="tool-btn" onclick="convertCase('alternate')">aLtErNaTe</button>
+    </div>
+    <div class="result-box" id="cc-result">Result will appear here...</div>
+    <button class="tool-btn secondary" onclick="copyResult('cc-result')" style="margin-top:0.5rem">📋 Copy</button>
+  </div>
+</div>
+
+<!-- Age Calculator -->
+<div class="overlay" id="modal-age">
+  <div class="modal">
+    <button class="close-btn" onclick="closeTool('age')">✕</button>
+    <h2>🎂 Age Calculator</h2>
+    <label>Enter your date of birth:</label>
+    <input type="date" id="age-input" style="width:100%;margin-bottom:1rem">
+    <button class="tool-btn" onclick="calculateAge()">Calculate Age</button>
+    <div class="result-box" id="age-result">Your age will appear here...</div>
+  </div>
+</div>
+
+<!-- Base64 -->
+<div class="overlay" id="modal-base64">
+  <div class="modal">
+    <button class="close-btn" onclick="closeTool('base64')">✕</button>
+    <h2>🔄 Base64 Encoder / Decoder</h2>
+    <label>Enter text:</label>
+    <textarea id="b64-input" rows="4" placeholder="Enter text to encode or decode..."></textarea>
+    <div class="flex-row">
+      <button class="tool-btn" onclick="doBase64('encode')">Encode →</button>
+      <button class="tool-btn" onclick="doBase64('decode')">← Decode</button>
+    </div>
+    <div class="result-box" id="b64-result">Result will appear here...</div>
+    <button class="tool-btn secondary" onclick="copyResult('b64-result')" style="margin-top:0.5rem">📋 Copy</button>
+  </div>
+</div>
+
+<script>
+// Track visits
+let visits = parseInt(localStorage.getItem('toolshub_visits') || '0') + 1;
+localStorage.setItem('toolshub_visits', visits);
+
+// Modal control
+function openTool(id) {
+  document.getElementById('modal-' + id).classList.add('active');
+  // Track tool use
+  let stats = JSON.parse(localStorage.getItem('toolshub_stats') || '{}');
+  stats[id] = (stats[id] || 0) + 1;
+  localStorage.setItem('toolshub_stats', JSON.stringify(stats));
+}
+function closeTool(id) {
+  document.getElementById('modal-' + id).classList.remove('active');
+}
+// Close on overlay click
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('active'); });
+});
+
+// Word Counter
+function countWords() {
+  const t = document.getElementById('wc-input').value;
+  document.getElementById('wc-words').textContent = t.trim() ? t.trim().split(/\s+/).length : 0;
+  document.getElementById('wc-chars').textContent = t.length;
+  document.getElementById('wc-nospace').textContent = t.replace(/\s/g,'').length;
+  document.getElementById('wc-sent').textContent = t.split(/[.!?]+/).filter(s => s.trim()).length;
+  document.getElementById('wc-para').textContent = t.split(/\n\s*\n/).filter(p => p.trim()).length;
+  document.getElementById('wc-lines').textContent = t ? t.split('\n').length : 0;
+}
+
+// Password Generator
+function generatePassword() {
+  const len = parseInt(document.getElementById('pw-length').value);
+  let chars = '';
+  if (document.getElementById('pw-upper').checked) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if (document.getElementById('pw-lower').checked) chars += 'abcdefghijklmnopqrstuvwxyz';
+  if (document.getElementById('pw-num').checked) chars += '0123456789';
+  if (document.getElementById('pw-sym').checked) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+  if (!chars) { document.getElementById('pw-result').textContent = 'Please select at least one option!'; return; }
+  let pw = '';
+  for (let i = 0; i < len; i++) pw += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById('pw-result').textContent = pw;
+}
+
+// Case Converter
+function convertCase(type) {
+  const t = document.getElementById('cc-input').value;
+  let result = '';
+  if (type === 'upper') result = t.toUpperCase();
+  else if (type === 'lower') result = t.toLowerCase();
+  else if (type === 'title') result = t.replace(/\b\w/g, c => c.toUpperCase());
+  else if (type === 'sentence') result = t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+  else if (type === 'alternate') result = t.split('').map((c,i) => i%2===0 ? c.toLowerCase() : c.toUpperCase()).join('');
+  document.getElementById('cc-result').textContent = result || 'Please enter some text first.';
+}
+
+// Age Calculator
+function calculateAge() {
+  const dob = new Date(document.getElementById('age-input').value);
+  if (!dob.getTime()) { document.getElementById('age-result').textContent = 'Please enter a valid date.'; return; }
+  const today = new Date();
+  let years = today.getFullYear() - dob.getFullYear();
+  let months = today.getMonth() - dob.getMonth();
+  let days = today.getDate() - dob.getDate();
+  if (days < 0) { months--; days += new Date(today.getFullYear(), today.getMonth(), 0).getDate(); }
+  if (months < 0) { years--; months += 12; }
+  const totalDays = Math.floor((today - dob) / (1000*60*60*24));
+  document.getElementById('age-result').innerHTML =
+    `🎉 You are <strong style="color:var(--accent)">${years} years, ${months} months, ${days} days</strong> old.<br>
+    That's about <strong style="color:var(--accent2)">${totalDays.toLocaleString()} days</strong> on Earth!`;
+}
+
+// Base64
+function doBase64(mode) {
+  const t = document.getElementById('b64-input').value;
+  try {
+    const r = mode === 'encode' ? btoa(unescape(encodeURIComponent(t))) : decodeURIComponent(escape(atob(t)));
+    document.getElementById('b64-result').textContent = r;
+  } catch(e) { document.getElementById('b64-result').textContent = 'Error: Invalid input for decoding.'; }
+}
+
+// Copy
+function copyResult(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+}
+</script>
+</body>
+</html>
